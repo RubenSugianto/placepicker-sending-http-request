@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback } from 'react';
 
 import Places from './components/Places.jsx';
 import Modal from './components/Modal.jsx';
@@ -16,7 +16,18 @@ function App() {
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
-  const { isFetching, error, fetchedData: userPlaces} = useFetch(fetchUserPlaces, []);
+  /*
+  Custom Hooks itu tujuannya bisa dipake di lebih dr 1 component function
+  Setiap komponen yang pake custom hooks akan punya kondisi STATE masing"
+  Custom Hooks berfungsi mirip seperti function (BIAR BS DIPAKE DAN PERSINGAKAT CODE)
+  Custom Hooks serupa kyk useState, useEffect, dll seperti itu
+  */
+  const { 
+    isFetching, 
+    error, 
+    fetchedData: userPlaces, 
+    setFetchedData: setUserPlaces
+  } = useFetch(fetchUserPlaces, []);
 
 
   function handleStartRemovePlace(place) {
@@ -28,54 +39,54 @@ function App() {
     setModalIsOpen(false);
   }
 
-  // async function handleSelectPlace(selectedPlace) {
+  async function handleSelectPlace(selectedPlace) {
 
-  //   /*
-  //   Kalo ditaro kek begini diatas fetch, harus munculin text / loading karna dia perlu waktu
-  //   buat ngefetch
-  //   // await updateUserPlaces([selectedPlace, ...userPlaces]);
-  //   */
-  //   setUserPlaces((prevPickedPlaces) => {
-  //     if (!prevPickedPlaces) {
-  //       prevPickedPlaces = [];
-  //     }
-  //     if (prevPickedPlaces.some((place) => place.id === selectedPlace.id)) {
-  //       return prevPickedPlaces;
-  //     }
-  //     return [selectedPlace, ...prevPickedPlaces];
-  //   });
+    /*
+    Kalo ditaro kek begini diatas fetch, harus munculin text / loading karna dia perlu waktu
+    buat ngefetch
+    // await updateUserPlaces([selectedPlace, ...userPlaces]);
+    */
+    setUserPlaces((prevPickedPlaces) => {
+      if (!prevPickedPlaces) {
+        prevPickedPlaces = [];
+      }
+      if (prevPickedPlaces.some((place) => place.id === selectedPlace.id)) {
+        return prevPickedPlaces;
+      }
+      return [selectedPlace, ...prevPickedPlaces];
+    });
 
-  //   /*
-  //   Ini optimistic updating dimana update terjadi di ui bukan kek loading ato text gitu pas fetch
-  //   */
-  //   try {
-  //     await updateUserPlaces([selectedPlace, ...userPlaces]);
-  //   } catch (error) {
-  //     setUserPlaces(userPlaces);
-  //     setErrorUpdatingPlaces({
-  //       message: error.message || 'Failed to update places.',
-  //     })
-  //   }
-  // }
+    /*
+    Ini optimistic updating dimana update terjadi di ui bukan kek loading ato text gitu pas fetch
+    */
+    try {
+      await updateUserPlaces([selectedPlace, ...userPlaces]);
+    } catch (error) {
+      setUserPlaces(userPlaces);
+      setErrorUpdatingPlaces({
+        message: error.message || 'Failed to update places.',
+      })
+    }
+  }
 
-  // const handleRemovePlace = useCallback(async function handleRemovePlace() {
-  //   setUserPlaces((prevPickedPlaces) =>
-  //     prevPickedPlaces.filter((place) => place.id !== selectedPlace.current.id)
-  //   );
+  const handleRemovePlace = useCallback(async function handleRemovePlace() {
+    setUserPlaces((prevPickedPlaces) =>
+      prevPickedPlaces.filter((place) => place.id !== selectedPlace.current.id)
+    );
 
-  //   try {
-  //     await updateUserPlaces(
-  //       userPlaces.filter((place) => place.id !== selectedPlace.current.id)
-  //     );
-  //   } catch (error) {
-  //     setUserPlaces(userPlaces);
-  //     setErrorUpdatingPlaces({
-  //       message: error.message || 'Failed to delete place.',
-  //     });
-  //   }
+    try {
+      await updateUserPlaces(
+        userPlaces.filter((place) => place.id !== selectedPlace.current.id)
+      );
+    } catch (error) {
+      setUserPlaces(userPlaces);
+      setErrorUpdatingPlaces({
+        message: error.message || 'Failed to delete place.',
+      });
+    }
 
-  //   setModalIsOpen(false);
-  // }, [userPlaces]);
+    setModalIsOpen(false);
+  }, [userPlaces, setUserPlaces]);
 
   function handleError() {
     setErrorUpdatingPlaces(null);
@@ -96,7 +107,7 @@ function App() {
       <Modal open={modalIsOpen} onClose={handleStopRemovePlace}>
         <DeleteConfirmation
           onCancel={handleStopRemovePlace}
-          // onConfirm={handleRemovePlace}
+          onConfirm={handleRemovePlace}
         />
       </Modal>
 
@@ -121,7 +132,7 @@ function App() {
           />    
         )}
         <AvailablePlaces 
-        // onSelectPlace={handleSelectPlace} 
+          onSelectPlace={handleSelectPlace} 
         />
       </main>
     </>
