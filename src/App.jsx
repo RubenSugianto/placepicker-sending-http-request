@@ -30,6 +30,8 @@ function App() {
       }
       setIsFetching(false);
     }
+
+    fetchPlaces();
   }, []);
 
   function handleStartRemovePlace(place) {
