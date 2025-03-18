@@ -21,6 +21,8 @@ function App() {
   Setiap komponen yang pake custom hooks akan punya kondisi STATE masing"
   Custom Hooks berfungsi mirip seperti function (BIAR BS DIPAKE DAN PERSINGAKAT CODE)
   Custom Hooks serupa kyk useState, useEffect, dll seperti itu
+  Bisa pass kondisi state jg kayak setFetchedData kalo memang butuh perubahan state!
+  
   */
   const { 
     isFetching, 
